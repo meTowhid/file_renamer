@@ -15,12 +15,10 @@ class MyApp(QMainWindow, Ui_MainWindow):
 
     def rename(self, frm_txt, to_txt):
         count = 0
-        for i, name in enumerate(self.preview.copy()):
+        for i, name in enumerate(self.preview):
             if frm_txt in name:
                 self.preview[i] = name.replace(frm_txt, to_txt, 1)
                 count += 1
-        print(self.original)
-        print(self.preview)
         return count
 
     def replace(self):
@@ -84,7 +82,7 @@ class MyApp(QMainWindow, Ui_MainWindow):
 
     def onclick_reset(self):
         if not self.original: return
-        self.preview = self.original
+        self.preview = self.original.copy()
         self.update_table()
         self.statusbar.showMessage('Reset to original name')
 
@@ -107,7 +105,7 @@ class MyApp(QMainWindow, Ui_MainWindow):
 
         if path and exists(path):
             self.original = [f for f in os.listdir(path) if isfile(join(path, f))]
-            self.preview = self.original
+            self.preview = self.original.copy()
             self.current_path = path
             self.update_table()
             self.statusbar.showMessage('{} files loaded'.format(len(self.original)))
