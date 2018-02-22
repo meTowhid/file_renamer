@@ -4,8 +4,9 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem as tItem
 import qdarkstyle
 from os.path import isfile, join, basename, exists
 import os
+from functools import partial
 
-Ui_MainWindow, QtBaseClass = uic.loadUiType('renamer_main.ui')
+Ui_MainWindow, QtBaseClass = uic.loadUiType('app.ui')
 
 
 class MyApp(QMainWindow, Ui_MainWindow):
@@ -15,7 +16,9 @@ class MyApp(QMainWindow, Ui_MainWindow):
 
     def rename(self, frm_txt, to_txt):
         count = 0
+        frm_txt = frm_txt if self.cb_case.isChecked() else frm_txt.lower()
         for i, name in enumerate(self.preview):
+            name = name if self.cb_case.isChecked() else name.lower()
             if frm_txt in name:
                 self.preview[i] = name.replace(frm_txt, to_txt, 1)
                 count += 1
@@ -24,7 +27,9 @@ class MyApp(QMainWindow, Ui_MainWindow):
     def replace(self):
         frm_txt = self.line_replace_from.text()
         to_txt = self.line_replace_to.text()
-        # self.preview = [n.replace(frm_txt, to_txt, 1) for n in self.preview]
+        if frm_txt is None or frm_txt == '':
+            self.statusbar.showMessage('Text is empty')
+            return -1
         return self.rename(frm_txt, to_txt)
 
     def delete(self):
@@ -33,14 +38,24 @@ class MyApp(QMainWindow, Ui_MainWindow):
         return self.rename(txt, '')
 
     def insert(self):
-        idx = self.line_insert_position.text()
         txt = self.line_insert_info.text()
-        if idx.isdigit():
-            i = int(idx) + 1
-            self.preview = [n[:i] + txt + n[i:] for n in self.preview]
+        if txt is None or txt == '':
+            self.statusbar.showMessage('Text is empty')
+            return -1
+
+        if self.rb_start.isChecked():
+            idx = 0
+        elif self.rb_end.isChecked():
+            idx = -1
         else:
-            self.statusbar.showMessage('Invalid digit')
-            return -1  # failed
+            idx = self.spinBox.value()
+
+        tmp = []
+        for n in self.preview:
+            i = idx if idx >= 0 else len(n)
+            tmp.append(n[:i] + txt + n[i:])
+        self.preview = tmp
+
         return len(self.original)
 
     operations = {0: replace, 1: delete, 2: insert}
@@ -56,21 +71,12 @@ class MyApp(QMainWindow, Ui_MainWindow):
         self.btn_rename.clicked.connect(self.onclick_rename)
         self.btn_reset.clicked.connect(self.onclick_reset)
 
-        self.cb_case.stateChanged.connect(self.cb_state_changed)
-        self.cb_ext.stateChanged.connect(self.ext_state_changed)
-        self.cb_regex.stateChanged.connect(self.regex_state_changed)
+        self.cb_case.stateChanged.connect(partial(self.cb_options_changed, 'case', self.cb_case.isChecked()))
+        self.cb_ext.stateChanged.connect(partial(self.cb_options_changed, 'ext', self.cb_ext.isChecked()))
+        self.cb_regex.stateChanged.connect(partial(self.cb_options_changed, 'regex', self.cb_regex.isChecked()))
 
-    def cb_state_changed(self):
-        b = self.cb['case'] = self.cb_case.isChecked()
-        print(b)
-
-    def ext_state_changed(self):
-        b = self.cb['ext'] = self.cb_ext.isChecked()
-        print(b)
-
-    def regex_state_changed(self):
-        b = self.cb['regex'] = self.cb_regex.isChecked()
-        print(b)
+    def cb_options_changed(self, cb, val):
+        self.cb[cb] = val
 
     def onclick_preview(self):
         if not self.original: return
@@ -110,9 +116,6 @@ class MyApp(QMainWindow, Ui_MainWindow):
             self.update_table()
             self.statusbar.showMessage('{} files loaded'.format(len(self.original)))
 
-            # header = self.table.horizontalHeader()
-            # header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-            # header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
         else:
             self.current_path = ''
             self.statusbar.showMessage('"{}" - Invalid path'.format(path))

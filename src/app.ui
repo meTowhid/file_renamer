@@ -117,7 +117,7 @@
             <item row="0" column="0">
              <widget class="QLabel" name="label_3">
               <property name="text">
-               <string>Keyword</string>
+               <string>Text</string>
               </property>
               <property name="buddy">
                <cstring>line_delete_key</cstring>
@@ -139,32 +139,78 @@
            <attribute name="title">
             <string>Insert</string>
            </attribute>
-           <layout class="QFormLayout" name="formLayout_2">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_6">
-              <property name="text">
-               <string>Position</string>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>Text</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="line_insert_info"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_4">
+              <property name="title">
+               <string>Index</string>
               </property>
-              <property name="buddy">
-               <cstring>line_insert_position</cstring>
-              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <item alignment="Qt::AlignHCenter">
+                <widget class="QRadioButton" name="rb_start">
+                 <property name="text">
+                  <string>Start</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="rb_index">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="spinBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimum">
+                  <number>-99</number>
+                 </property>
+                 <property name="value">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item alignment="Qt::AlignHCenter">
+                <widget class="QRadioButton" name="rb_end">
+                 <property name="layoutDirection">
+                  <enum>Qt::LeftToRight</enum>
+                 </property>
+                 <property name="text">
+                  <string>End</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="line_insert_position"/>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Info</string>
-              </property>
-              <property name="buddy">
-               <cstring>line_insert_info</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="line_insert_info"/>
             </item>
            </layout>
           </widget>
@@ -194,6 +240,9 @@
                </property>
                <property name="text">
                 <string>Match Case</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -281,11 +330,23 @@
        </layout>
       </widget>
       <widget class="QTableWidget" name="table">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="autoScroll">
         <bool>false</bool>
        </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>false</bool>
+       </property>
        <property name="selectionMode">
-        <enum>QAbstractItemView::NoSelection</enum>
+        <enum>QAbstractItemView::SingleSelection</enum>
        </property>
        <property name="selectionBehavior">
         <enum>QAbstractItemView::SelectRows</enum>
@@ -299,10 +360,28 @@
        <property name="cornerButtonEnabled">
         <bool>false</bool>
        </property>
+       <property name="rowCount">
+        <number>0</number>
+       </property>
+       <attribute name="horizontalHeaderVisible">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="horizontalHeaderCascadingSectionResizes">
+        <bool>true</bool>
+       </attribute>
        <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>200</number>
+       </attribute>
+       <attribute name="horizontalHeaderHighlightSections">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="horizontalHeaderMinimumSectionSize">
         <number>100</number>
        </attribute>
        <attribute name="horizontalHeaderStretchLastSection">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="verticalHeaderCascadingSectionResizes">
         <bool>true</bool>
        </attribute>
        <attribute name="verticalHeaderDefaultSectionSize">
@@ -340,7 +419,29 @@
     </rect>
    </property>
   </widget>
+  <action name="actionT">
+   <property name="text">
+    <string>t</string>
+   </property>
+  </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>rb_index</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>214</x>
+     <y>218</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>168</x>
+     <y>218</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
